@@ -1,0 +1,3 @@
+- insert:
+    - id: chat-sync
+      name: dsh-chat-syncer

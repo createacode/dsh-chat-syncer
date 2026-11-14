@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bg" x1="6" y1="4" x2="58" y2="62" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#26338f"/>
+      <stop offset="0.55" stop-color="#4b3fd6"/>
+      <stop offset="1" stop-color="#8b3fd8"/>
+    </linearGradient>
+    <linearGradient id="left" x1="12" y1="17" x2="34" y2="47" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff9a62"/>
+      <stop offset="1" stop-color="#e23b3b"/>
+    </linearGradient>
+    <linearGradient id="right" x1="31" y1="19" x2="54" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#66d9ff"/>
+      <stop offset="0.55" stop-color="#5b8dff"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="18" y1="50" x2="48" y2="10" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7dffc8"/>
+      <stop offset="1" stop-color="#69e5ff"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#0b1030" flood-opacity=".35"/>
+    </filter>
+  </defs>
+
+  <rect width="64" height="64" rx="16" fill="url(#bg)"/>
+  <circle cx="52" cy="12" r="13" fill="#ffffff" opacity=".07"/>
+  <circle cx="10" cy="56" r="16" fill="#ffffff" opacity=".05"/>
+
+  <!-- left device: Gitee coral -->
+  <g filter="url(#soft)">
+    <rect x="9" y="18" width="24" height="30" rx="5" fill="url(#left)"/>
+    <rect x="9" y="18" width="24" height="30" rx="5" fill="none" stroke="#ffffff" stroke-opacity=".35" stroke-width="1"/>
+    <rect x="13" y="23" width="16" height="14" rx="2.5" fill="#fff" fill-opacity=".94"/>
+    <rect x="15.5" y="26" width="8" height="1.8" rx=".9" fill="#e23b3b"/>
+    <rect x="15.5" y="29.5" width="11" height="1.8" rx=".9" fill="#ff9a62"/>
+    <circle cx="21" cy="43" r="2" fill="#fff" fill-opacity=".9"/>
+  </g>
+
+  <!-- right device: GitHub blue/purple -->
+  <g filter="url(#soft)">
+    <rect x="31" y="16" width="24" height="30" rx="5" fill="url(#right)"/>
+    <rect x="31" y="16" width="24" height="30" rx="5" fill="none" stroke="#ffffff" stroke-opacity=".38" stroke-width="1"/>
+    <rect x="35" y="21" width="16" height="14" rx="2.5" fill="#fff" fill-opacity=".94"/>
+    <circle cx="45.5" cy="26.5" r="2.7" fill="#5b8dff"/>
+    <path d="M41.5 32.5c.5-2.2 2-3.4 4-3.4s3.5 1.2 4 3.4" fill="none" stroke="#5b8dff" stroke-width="1.7" stroke-linecap="round"/>
+    <circle cx="43" cy="41" r="2" fill="#fff" fill-opacity=".9"/>
+  </g>
+
+  <!-- sync ring -->
+  <g fill="none" stroke="url(#ring)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M17 51c-4.5-3.2-7-7.8-7-13"/>
+    <path d="M10 38l-2.4 4.1L12 44"/>
+    <path d="M47 13c4.5 3.2 7 7.8 7 13"/>
+    <path d="M54 26l2.4-4.1L52 20"/>
+  </g>
+  <circle cx="10" cy="38" r="2.2" fill="#7dffc8"/>
+  <circle cx="54" cy="26" r="2.2" fill="#69e5ff"/>
+</svg>
