@@ -106,7 +106,25 @@ export function adoptLegacyDataDir(legacyDir, targetDir) {
  */
 function restartAppHost() {
   try {
-    const electron = createRequire(import.meta.url)('electron');
+    /* Resolution order matters: the plugin is loaded by DSH's own loader, and a
+     * plain createRequire() can miss Electron's built-in module in a worker or
+     * utility process. Try every handle before giving up. */
+    let electron = null;
+    for (const loader of [
+      () => (typeof globalThis.require === 'function' ? globalThis.require('electron') : null),
+      () => (process.mainModule && typeof process.mainModule.require === 'function'
+        ? process.mainModule.require('electron')
+        : null),
+      () => createRequire(process.execPath)('electron'),
+      () => createRequire(import.meta.url)('electron'),
+    ]) {
+      try {
+        electron = loader();
+        if (electron) break;
+      } catch {
+        /* try the next handle */
+      }
+    }
     const app = electron?.app || electron?.remote?.app;
     if (!app || typeof app.relaunch !== 'function' || typeof app.exit !== 'function') {
       return { ok: false, code: 'restart-unsupported', error: '当前宿主没有 Electron app 句柄' };
@@ -229,11 +247,41 @@ export function apply(ctx) {
         case 'uninstall-cleanup':
           result = await service.uninstallCleanup();
           break;
+        case 'clear-credentials':
+          result = await service.clearCredentials();
+          break;
         case 'withdraw-agreement':
           result = { ok: true, state: await service.withdrawAgreement() };
           break;
         case 'check':
           result = await service.check({ manual: true });
+          break;
+        case 'recovery':
+          result = service.recoveryPlan();
+          break;
+        case 'detect-git':
+          result = await service.refreshGitInfo();
+          break;
+        case 'compact-repo':
+          result = await service.compactRepo(body);
+          break;
+        case 'rotate-repo':
+          result = await service.rotateRepo(body);
+          break;
+        case 'backup-sessions':
+          result = await service.backupLocalSessions();
+          break;
+        case 'backup-now':
+          result = await service.backupNow({ reason: 'manual' });
+          break;
+        case 'backup-key':
+          result = await service.revealBackupKey();
+          break;
+        case 'backup-list':
+          result = await service.listLocalBackups();
+          break;
+        case 'restore-backup-file':
+          result = await service.restoreBackupFile(body);
           break;
         case 'sessions':
           result = await service.listSessions();
@@ -272,6 +320,7 @@ export function apply(ctx) {
             allSelected: body.allSelected,
             passphrase: body.passphrase,
             sessionRelPaths: Array.isArray(body.sessionRelPaths) ? body.sessionRelPaths : undefined,
+            allowRemoteAhead: Boolean(body.allowRemoteAhead),
             reason: 'manual',
           });
           break;

@@ -137,7 +137,7 @@ try {
     dataDir: path.join(tmp, 'device-a'),
     sessionsRoot,
   });
-  await serviceA.init();
+  await serviceA.init();serviceA.config.storageVersion = 1;
   const login = await serviceA.login({ provider: 'gitee', token: 'token-123', repoName: 'dsh-chat-sync-data' });
   assert.equal(login.state.loggedIn, true);
   assert.equal(login.repoCreated, true);
@@ -176,7 +176,7 @@ try {
     dataDir: path.join(tmp, 'device-b'),
     sessionsRoot: path.join(tmp, 'sessions-b'),
   });
-  await serviceB.init();
+  await serviceB.init();serviceB.config.storageVersion = 1;
   const loginB = await serviceB.login({ provider: 'gitee', token: 'token-123', repoName: 'dsh-chat-sync-data' });
   assert.equal(loginB.repoCreated, false);
   assert.equal(loginB.update.available, true);
@@ -209,7 +209,7 @@ try {
     dataDir: path.join(tmp, 'device-c'),
     sessionsRoot: path.join(tmp, 'sessions-c'),
   });
-  await serviceC.init();
+  await serviceC.init();serviceC.config.storageVersion = 1;
   const loginC = await serviceC.login({ provider: 'gitee', token: 'token-123', repoName: 'dsh-chat-sync-data' });
   assert.equal(loginC.update.available, true);
   assert.equal(loginC.state.encryption.enabled, true);
@@ -240,7 +240,7 @@ try {
     dataDir: path.join(tmp, 'device-d'),
     sessionsRoot: path.join(tmp, 'sessions-d'),
   });
-  await serviceD.init();
+  await serviceD.init();serviceD.config.storageVersion = 1;
   await assert.rejects(() => serviceD.importData({ data: exported.data }), /口令/);
   const imported = await serviceD.importData({ data: exported.data, passphrase: 'export-package-pass' });
   assert.equal(imported.added, 1);
@@ -296,7 +296,7 @@ try {
   assert.equal(removedAccount.state.accounts.some((account) => account.userKey === accountKey), false);
 
   const serviceMaintenance = new SyncService({ ctx: fakeCtx(), dataDir: path.join(tmp, 'device-maint'), sessionsRoot: path.join(tmp, 'sessions-maint') });
-  await serviceMaintenance.init();
+  await serviceMaintenance.init();serviceMaintenance.config.storageVersion = 1;
   await serviceMaintenance.login({ provider: 'gitee', token: 'token-123', repoName: 'dsh-chat-sync-data' });
   await serviceMaintenance.acceptAgreement({ version: AGREEMENT_VERSION });
   const initialized = await serviceMaintenance.initializePlugin();
@@ -306,7 +306,7 @@ try {
   assert.equal(cleared.loggedIn, false);
 
   const smart = new SyncService({ ctx: fakeCtx(), dataDir: path.join(tmp, 'device-smart'), sessionsRoot: path.join(tmp, 'sessions-smart') });
-  await smart.init();
+  await smart.init();smart.config.storageVersion = 1;
   await smart.login({ provider: 'gitee', token: 'token-123', repoName: 'dsh-chat-sync-data' });
   await smart.acceptAgreement({ version: AGREEMENT_VERSION });
   smart.config.remoteHead = null;
@@ -333,7 +333,7 @@ try {
     await writeFile(path.join(rootE, '--D-B--', 'session-2', 'session.v4.jsonl.zstd'), Buffer.from('e1'));
 
     const deviceD = new SyncService({ ctx: fakeCtx(), dataDir: path.join(tmp, 'mode-d', 'data'), sessionsRoot: rootD });
-    await deviceD.init();
+    await deviceD.init();deviceD.config.storageVersion = 1;
     await deviceD.login({ provider: 'gitee', token: 'token-123', repoName: 'dsh-chat-sync-data' });
     await deviceD.acceptAgreement({ version: AGREEMENT_VERSION });
     const firstPush = await deviceD.push({ reason: 'manual', mode: 'force', allSelected: true, sessionRelPaths: [relA] });
@@ -341,7 +341,7 @@ try {
     assert.equal(firstPush.mode, 'force');
 
     const deviceE = new SyncService({ ctx: fakeCtx(), dataDir: path.join(tmp, 'mode-e', 'data'), sessionsRoot: rootE });
-    await deviceE.init();
+    await deviceE.init();deviceE.config.storageVersion = 1;
     await deviceE.login({ provider: 'gitee', token: 'token-123', repoName: 'dsh-chat-sync-data' });
     await deviceE.acceptAgreement({ version: AGREEMENT_VERSION });
     await deviceE.pull({});
@@ -383,7 +383,7 @@ try {
       dataDir: path.join(tmp, 'legacy', 'data'),
       sessionsRoot: path.join(tmp, 'legacy', 'sessions'),
     });
-    await legacyService.init();
+    await legacyService.init();legacyService.config.storageVersion = 1;
     const legacyLogin = await legacyService.login({ provider: 'gitee', token: 'token-123' });
     assert.equal(legacyService.config.repo.name, 'dsh-chat-sync-data');
     assert.equal(legacyLogin.repoCreated, false);
@@ -421,7 +421,7 @@ try {
       sessionsRoot: rootA,
       attachmentsRoot: objectsA,
     });
-    await deviceA.init();
+    await deviceA.init();deviceA.config.storageVersion = 1;
     await deviceA.login({ provider: 'gitee', token: 'token-123' });
     await deviceA.acceptAgreement({ version: AGREEMENT_VERSION });
     const pushed = await deviceA.push({ reason: 'manual', mode: 'incremental' });
@@ -433,7 +433,7 @@ try {
       sessionsRoot: rootB,
       attachmentsRoot: objectsB,
     });
-    await deviceB.init();
+    await deviceB.init();deviceB.config.storageVersion = 1;
     await deviceB.login({ provider: 'gitee', token: 'token-123' });
     await deviceB.acceptAgreement({ version: AGREEMENT_VERSION });
     const pulled = await deviceB.pull({});
@@ -459,7 +459,7 @@ try {
       dataDir: path.join(tmp, 'versions', 'data'),
       sessionsRoot: path.join(tmp, 'versions', 'sessions'),
     });
-    await svc.init();
+    await svc.init();svc.config.storageVersion = 1;
     await svc.login({ provider: 'gitee', token: 'token-123' });
     await svc.acceptAgreement({ version: AGREEMENT_VERSION });
     const headPath = 'users/gitee-alice/common/HEAD.json';
@@ -503,14 +503,14 @@ try {
     await writeFile(path.join(rootA, sessionRel), Buffer.from('a1'));
 
     const deviceA = new SyncService({ ctx: fakeCtx(), dataDir: path.join(tmp, 'ack-a', 'data'), sessionsRoot: rootA });
-    await deviceA.init();
+    await deviceA.init();deviceA.config.storageVersion = 1;
     await deviceA.login({ provider: 'gitee', token: 'token-123' });
     await deviceA.acceptAgreement({ version: AGREEMENT_VERSION });
     const firstPush = await deviceA.push({ mode: 'incremental', allSelected: true });
     assert.equal(firstPush.ok, true);
 
     const deviceB = new SyncService({ ctx: fakeCtx(), dataDir: path.join(tmp, 'ack-b', 'data'), sessionsRoot: rootB });
-    await deviceB.init();
+    await deviceB.init();deviceB.config.storageVersion = 1;
     await deviceB.login({ provider: 'gitee', token: 'token-123' });
     await deviceB.acceptAgreement({ version: AGREEMENT_VERSION });
     await deviceB.pull({});
@@ -553,7 +553,7 @@ try {
     await writeFile(path.join(objectsA, 'aa', 'a'.repeat(64)), Buffer.from('image-a'));
 
     const device = new SyncService({ ctx: fakeCtx(), dataDir: path.join(tmp, 'merge-a', 'data'), sessionsRoot: rootA, attachmentsRoot: objectsA });
-    await device.init();
+    await device.init();device.config.storageVersion = 1;
     await device.login({ provider: 'gitee', token: 'token-123' });
     await device.acceptAgreement({ version: AGREEMENT_VERSION });
     const first = await device.push({ mode: 'incremental', allSelected: true });
@@ -562,7 +562,7 @@ try {
     const rootB = path.join(tmp, 'merge-b', 'sessions');
     const objectsB = path.join(tmp, 'merge-b', 'objects');
     const deviceB = new SyncService({ ctx: fakeCtx(), dataDir: path.join(tmp, 'merge-b', 'data'), sessionsRoot: rootB, attachmentsRoot: objectsB });
-    await deviceB.init();
+    await deviceB.init();deviceB.config.storageVersion = 1;
     await deviceB.login({ provider: 'gitee', token: 'token-123' });
     await deviceB.acceptAgreement({ version: AGREEMENT_VERSION });
     await deviceB.pull({});
@@ -585,7 +585,7 @@ try {
     const rootC = path.join(tmp, 'merge-c', 'sessions');
     const objectsC = path.join(tmp, 'merge-c', 'objects');
     const deviceC = new SyncService({ ctx: fakeCtx(), dataDir: path.join(tmp, 'merge-c', 'data'), sessionsRoot: rootC, attachmentsRoot: objectsC });
-    await deviceC.init();
+    await deviceC.init();deviceC.config.storageVersion = 1;
     await deviceC.login({ provider: 'gitee', token: 'token-123' });
     await deviceC.acceptAgreement({ version: AGREEMENT_VERSION });
     const pulledC = await deviceC.pull({});

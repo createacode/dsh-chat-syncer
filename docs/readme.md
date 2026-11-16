@@ -16,7 +16,7 @@ DSH 多端会话同步助手（包名 `dsh-chat-syncer`）是运行在 DeepSeek 
 2. **插件只做传输**：打包、加密、上传、下载、恢复；不分析、不画像、不转售会话内容。
 3. **本机优先**：令牌、明文口令、设备信息留在本机；浏览器端永远拿不到令牌。
 
-当前版本：**0.15.0** · 作者：**XAF** · License：**AGPL-3.0-only**
+当前版本：**0.16.18** · 作者：**XAF** · License：**AGPL-3.0-only**
 
 ## 功能范围
 
@@ -123,7 +123,7 @@ users/<provider>-<login>/
 - 推送时解析会话日志里引用的 `sha256:` 附件 id，把本机附件库（`<DSH_HOME>/attachments/v1/objects/<前两位>/<sha>`）中存在的文件一起打包（单文件 ≤ 20 MB，总计 ≤ 48 MB）。
 - 拉取时写回同一个对象库；已存在的对象不重复写。
 - 发送端自己也缺失的附件会列进 `manifest.missingAttachments`；接收端把这些引用替换成占位文本（原会话文件先备份到 `backups/`），避免续聊时在请求准备阶段报 `DeepSeek Messages transport failed`。
-- 「修改会话」标签页对已经下载过的历史会话做同样的处理：先扫描（`dryRun`）列出缺失数量，确认后改写并备份。
+- 「会话修复」标签页对已经下载过的历史会话做同样的处理：先扫描（`dryRun`）列出缺失数量，确认后改写并备份。
 
 真正的对象级增量（按会话哈希只传变化）设计见 [INCREMENTAL.md](INCREMENTAL.md)。
 
@@ -148,11 +148,11 @@ users/<provider>-<login>/
 ## 安装
 
 ```powershell
-# 安装包（推荐）：下载 dist/dsh-chat-syncer-0.15.0.tgz 后安装，不需要 git、不需要 Gitee 账号
-dsh plugin --profile desktop add "file:C:\Users\<you>\Downloads\dsh-chat-syncer-0.15.0.tgz"
+# 安装包（推荐）：下载 dist/dsh-chat-syncer-0.16.18.tgz 后安装，不需要 git、不需要 Gitee 账号
+dsh plugin --profile desktop add "file:C:\Users\<you>\Downloads\dsh-chat-syncer-0.16.18.tgz"
 
 # 或者让 DSH 直接拉安装包（HTTPS，不经过 git）
-dsh plugin --profile desktop add "https://gitee.com/user_gitee/dsh-chat-sync/raw/master/dist/dsh-chat-syncer-0.15.0.tgz"
+dsh plugin --profile desktop add "https://gitee.com/user_gitee/dsh-chat-sync/raw/master/dist/dsh-chat-syncer-0.16.18.tgz"
 
 # 本地源码目录（开发调试）
 dsh plugin --profile desktop add "file:<path-to-this-repo>"
@@ -186,6 +186,22 @@ lib/update.js         Gitee 插件自更新
 docs/                 项目文档
 test/                 Node 内置测试
 ```
+
+## 存储模型与容量（0.16+）
+
+- **一个会话一个文件夹**：`users/<账号>/sessions/<项目>/<会话>/…`，推送时只写发生变化的会话，不再整包重传。
+- **附件只写一次**：按 `sha256` 内容寻址，重复引用不会重复上传。
+- **原子发布**：会话与附件先写，清单固化为 `manifests/<revision>.json`，`HEAD.json` 最后写；读取端钉在 `manifestCommit` 上并校验 sha256。
+- **双传输通道**：本机检测到 git 时使用浅克隆 + 一次原子 `push`；没有 git 时退回 REST 逐文件写入，两者可混用。
+- **容量守护**：用量 70% 黄、85% 红、90% 暂停自动推送；80% 时提示「仓库瘦身」或「备份并清空仓库」。
+- **瘦身（git）**：用 `orphan` 提交强推，只删除历史版本，当前会话逐字节保留；实测 160 MiB 历史可压回 20 MiB。
+- **兜底（无 git）**：先把本机会话与附件备份到 `~/.dsh/dsh-chat-syncer/backups/`，再迁移到新仓库并把旧仓库保留为归档；旧仓库的 `HEAD.json` 会写入 `SUCCESSOR.json` 供其他设备跟随。
+- **自动化备份**：每次瘦身、清空或迁移仓库前，强制生成本地 AES-256-GCM 加密备份；也可在「存储」页手动备份与恢复。
+- **备份密钥双份**：一份写入仓库 `users/<账号>/common/backup-key.json`，一份保存在本机插件设置里；仓库无法操作时仍可在设置页查看（登录后可见，默认掩码显示）。
+- **提交溯源**：默认在每次提交信息里附带本机信息（设备名、设备 ID、账号、系统、主机名、时间、会话/附件数量），可在「存储」页关闭；git 提交的作者也会使用本机设备名。
+- **自动提交间隔**：默认 10 分钟，避免每个回合都产生一次提交。
+- **加密仓库**：当前仍使用整包快照（按文件加密在后续版本提供），因此容量策略对加密仓库暂不生效。
+- **迁移与跟随**：新仓库会写 `SUCCESSOR.json` 指向新地址，其他设备下次检查时自动跟随。
 
 ## 已知限制
 

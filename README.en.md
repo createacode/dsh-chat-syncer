@@ -75,19 +75,19 @@ Gitee is the default platform. GitHub is selectable. Sign-in uses a personal acc
 
 **Recommended: install from the package tarball. No git, no Gitee account.**
 
-Download `dist/dsh-chat-syncer-0.15.0.tgz` from this repository, then:
+Download `dist/dsh-chat-syncer-0.16.3.tgz` from this repository, then:
 
 ```powershell
-dsh plugin --profile desktop add "file:C:\Users\<you>\Downloads\dsh-chat-syncer-0.15.0.tgz"
+dsh plugin --profile desktop add "file:C:\Users\<you>\Downloads\dsh-chat-syncer-0.16.3.tgz"
 ```
 
 Or let DSH fetch it over HTTPS, with no git involved:
 
 ```powershell
-dsh plugin --profile desktop add "https://gitee.com/user_gitee/dsh-chat-sync/raw/master/dist/dsh-chat-syncer-0.15.0.tgz"
+dsh plugin --profile desktop add "https://gitee.com/user_gitee/dsh-chat-sync/raw/master/dist/dsh-chat-syncer-0.16.3.tgz"
 ```
 
-(If this DSH version does not accept a URL specifier, download `dist/dsh-chat-syncer-0.15.0.tgz` and use the `file:` command above.)
+(If this DSH version does not accept a URL specifier, download `dist/dsh-chat-syncer-0.16.3.tgz` and use the `file:` command above.)
 
 Other options:
 

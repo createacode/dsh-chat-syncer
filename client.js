@@ -7,7 +7,9 @@ window.__ModuleLoader__.load({
     const PANEL_ID = 'dsh-chat-syncer';
     const PACKAGE_NAME = 'dsh-chat-syncer';
     const API = '/dsh-chat-syncer/api';
-    const VERSION = '0.15.0';
+    const VERSION = '0.16.18';
+    /* Bottom-right toast: large enough to read, visible for 40 seconds. */
+    const TOAST_DURATION_MS = 40_000;
 
     /* ------------------------------------------------------------------ */
     /* Copy                                                               */
@@ -198,6 +200,77 @@ window.__ModuleLoader__.load({
       'backup.restoreConfirm': '恢复备份',
       'backup.restored': '已恢复 {count} 个文件',
       'backup.count': '{count} 个文件',
+      'settings.nav.storage': '存储',
+      'settings.section.storageDesc': '按会话文件夹增量写入：只上传发生变化的会话，HEAD 最后发布。',
+      'storage.usage': '已用 {used} / {quota}',
+      'storage.transportGit': '传输方式：git 提交（一次推送原子生效）',
+      'storage.transportRest': '传输方式：REST 逐文件（清单与 HEAD 原子发布）',
+      'storage.gitMissing': '未检测到本机 git：可使用“备份并清空仓库”恢复容量，或安装 git 后启用原地瘦身。',
+      'storage.check': '重新检查',
+      'storage.checkDone': '已重新检查仓库',
+      'storage.compact': '仓库瘦身',
+      'storage.compactDesc': '只删除 Git 历史版本，当前全部会话保留；需要本机 git。',
+      'storage.compactDone': '瘦身完成，历史已压缩为当前快照',
+      'storage.rotate': '备份并清空仓库',
+      'storage.rotateDesc': '先把本机会话备份到本地，再把当前快照迁移到新仓库；旧仓库保留为归档。',
+      'storage.rotateDone': '已备份并迁移到新仓库',
+      'storage.resume': '恢复自动同步',
+      'storage.resumed': '已恢复自动同步',
+      'storage.recovery': '仓库需要处理',
+      'storage.recoveryHint': '按下面的步骤恢复容量后即可继续同步。',
+      'storage.backupTitle': '本地加密备份',
+      'storage.backupDesc': '每次瘦身或清空仓库前都会自动备份；也可以手动备份。备份使用 AES-256-GCM 加密。',
+      'storage.backupNow': '立即备份',
+      'storage.backupDone': '备份完成：{name}',
+      'storage.backupLast': '最近备份：{time} · {size}',
+      'storage.backupNone': '还没有本地备份',
+      'storage.key': '备份密钥',
+      'storage.keyShow': '显示',
+      'storage.keyHide': '隐藏',
+      'storage.keyCopy': '复制',
+      'storage.keyCopied': '备份密钥已复制，请妥善保存',
+      'storage.keyHint': '密钥在仓库和本机各存一份；仓库无法操作时仍可在这里查看。',
+      'storage.keyNeedsLogin': '登录后可查看备份密钥',
+      'storage.restore': '恢复最近备份',
+      'storage.restoreDesc': '把最近一次加密备份解压回本机会话目录，覆盖同名文件。',
+      'storage.restored': '已恢复：{sessions} 个会话、{attachments} 个附件',
+      'storage.includeLocalInfo': '提交时携带本机信息（设备名、系统、主机名、时间），便于溯源',
+      'storage.transportTitle': '提交方式',
+      'storage.transport_auto': '自动',
+      'storage.transport_git': 'git 提交',
+      'storage.transport_rest': 'REST 逐文件',
+      'storage.transportHint': '自动：有 git 用 git，没有则 REST。git：原子推送、可原地瘦身；REST：无需 git，逐文件写，提交更多、不能原地瘦身。',
+      'storage.transportSaved': '提交方式已更新',
+      'hero.transport': '提交方式',
+      'hero.transportGitHint': 'git {version} · 原子推送，可原地瘦身',
+      'hero.transportRestHint': '逐文件写入 · 无需本机 git',
+      'restart.title': '新版本已写入，请重启 DSH',
+      'restart.desc': '已更新到 v{version}，当前宿主仍在运行旧代码。请完全退出 DSH（含托盘）后重新打开，或直接点右侧按钮重启。',
+      'restart.now': '立即重启 DSH',
+      'restart.manualTitle': '需要手动重启 DSH',
+      'restart.manualBody': '当前 DSH 的运行方式不支持插件自动重启。更新已经写入磁盘，按下面步骤重启后生效：',
+      'restart.step1': '右键系统托盘里的 DSH 图标，选择退出；或在任务管理器里结束 DeepSeek Harness 进程',
+      'restart.step2': '确认托盘图标消失、相关进程全部退出',
+      'restart.step3': '重新打开 DeepSeek Harness，插件会加载新版本',
+      'restart.ok': '知道了',
+      'transport.git': 'git 提交',
+      'transport.rest': 'REST 逐文件',
+      'git.detected': '已检测到 git {version}，将使用 git 提交（原子推送、可原地瘦身）。',
+      'git.missingTitle': '未检测到 git',
+      'git.missingDesc': '插件推荐使用 git 提交：一次推送原子生效、仓库可原地瘦身。你也可以改用 REST 逐文件方式，功能一致，但每个文件会单独提交、且无法原地瘦身。',
+      'git.installWin': 'Windows：winget install --id Git.Git -e，或从 https://git-scm.com/download/win 下载安装',
+      'git.installMac': 'macOS：xcode-select --install，或 brew install git',
+      'git.installLinux': 'Linux：sudo apt install git（Debian/Ubuntu）或 sudo dnf install git（Fedora）',
+      'git.installAfter': '安装完成后点“重新检测”；如果 DSH 是在终端启动的，请重开终端/重启 DSH 再检测。',
+      'git.redetect': '重新检测',
+      'git.found': '已检测到 git，将使用 git 提交',
+      'git.stillMissing': '仍未检测到 git，请确认安装完成并重启 DSH 后重试',
+      'git.useRest': '改用 REST 方式',
+      'git.later': '暂不处理',
+      'git.restTitle': 'REST 逐文件方式说明',
+      'git.restDesc': '不需要本机安装 git：插件直接调用 Gitee/GitHub API，只上传发生变化的会话文件，附件按 sha256 只传一次。代价是每个文件都会生成一次提交（提交数比 git 多），首次同步较慢，且无法原地强推瘦身；仓库接近配额时请使用“备份并清空仓库/迁移”。',
+      'git.restChosen': '已切换到 REST 逐文件方式',
+      'git.hideRest': '收起说明',
       'maintenance.clear': '清空插件数据',
       'maintenance.clearDesc': '删除本机插件存储的登录状态、历史账号、设置、备份和备忘录；不会删除现有聊天或仓库数据。',
       'maintenance.clearAction': '清空数据',
@@ -213,7 +286,7 @@ window.__ModuleLoader__.load({
       'settings.section.collapse': '收起',
       'settings.syncMode': '同步方式',
       'settings.syncModeDesc': '推送和下载都默认增量：只补缺失与会更新的会话，保留双方其他记录。只有你明确点「强制覆盖」时才会用本机快照替换公共快照，或把本机同路径会话换成仓库版本。',
-      'tabs.repair': '修改会话',
+      'tabs.repair': '会话修复',
       'errors.unknownAction': '宿主进程还在运行旧版本（界面已是 {client}）。请完全退出 DSH 后再启动；只刷新页面不会更新宿主。',
       'versions.title': '历史版本',
       'picker.title': '选择要下载的会话',
@@ -245,6 +318,9 @@ window.__ModuleLoader__.load({
       'repair.repairing': '修复中…',
       'repair.summary': '扫描 {scanned} 个会话，发现 {sessions} 个会话共 {blocks} 处缺失引用',
       'repair.none': '扫描 {scanned} 个会话，没有发现缺失引用',
+      'repair.scanClean': '扫描完成：{scanned} 个会话，没有发现缺失附件',
+      'repair.scanFound': '扫描完成：{scanned} 个会话，{missing} 处缺失引用',
+      'repair.scanEmpty': '扫描没有返回结果，请重试',
       'repair.item': '{count} 处',
       'repair.done': '已修复 {sessions} 个会话，替换 {blocks} 处引用，备份 {backups} 个文件',
       'repair.note': '修复会把缺失的图片引用替换成占位文本，原会话文件先备份到 backups 目录。修复后请重开该会话或重启 DSH。',
@@ -257,6 +333,8 @@ window.__ModuleLoader__.load({
       'reg.summary': '共 {sessions} 个会话：{unregistered} 个未登记，{missing} 个工作区缺失',
       'reg.none': '共 {sessions} 个会话，登记完整',
       'reg.done': '已登记 {repaired} 个会话，清理缓存 {cleared} 个；重启 DSH 后生效',
+      'reg.registryUnavailable': '未能访问 DSH 的工作区注册表，无法自动登记；请在侧栏重新打开对应工作区。',
+      'reg.failedSummary': '{count} 个会话登记失败：',
       'reg.unavailable': '这个环境没有工作区注册表（宿主不可用），无法登记',
       'reg.confirmTitle': '确认修复会话登记',
       'reg.confirmBody': '将按会话头的工作目录重新登记 {count} 个会话，并清理它们的投影缓存；完成后需要重启 DSH。',
@@ -455,12 +533,15 @@ window.__ModuleLoader__.load({
       'push.mode.incremental': '增量合并',
       'push.mode.incrementalDesc': '保留远端其他会话，只把这些选中的会话合并进去。',
       'push.mode.autoIncremental': '未全选，已自动切换为增量合并。',
-      'push.pullRequired': '仓库已有其他设备提交的新版本。强制覆盖会替换云端快照，请先拉取到最新；直接改用「增量合并」则不需要。',
-      'push.pullThenPush': '先增量拉取，再强制覆盖',
+      'push.pullRequired': '仓库已有其他设备提交的新版本。建议先拉取远端更新，再提交；也可以仍然增量提交（只合并变化的会话，不会覆盖其他会话）。',
+      'push.pullNow': '先拉取远端更新',
+      'push.submitAnyway': '仍然增量提交',
+      'push.pullFailed': '拉取失败：{error}',
+      'push.pullThenPush': '先拉取远端更新，再提交',
       'pull.incremental': '增量拉取',
       'pull.force': '强制覆盖本地',
       'pull.forceHint': '增量拉取只补缺失和远端更新的会话；强制覆盖会用仓库快照替换本机同路径会话（先自动备份）。',
-      'busy.banner': '正在与仓库通信，请稍候…',
+      'busy.banner': '正在处理，请稍候…',
       'error.title': '操作失败',
       'error.loginRequired': '请先登录',
       'error.agreementRequired': '请先签署协议',
@@ -529,11 +610,13 @@ window.__ModuleLoader__.load({
       'uninstall.title': '插件维护',
       'uninstall.subtitle': '一键卸载多端会话同步助手，并检查插件清单里是否已清理干净。',
       'uninstall.warning': '卸载插件不会删除仓库数据',
-      'uninstall.desc': '卸载只会移除本机插件与侧栏入口；你仓库中的用户目录、会话快照和恢复文件不会被删除。',
+      'uninstall.desc': '卸载会移除本机插件与侧栏入口，并清除本机保存的仓库令牌；你仓库中的用户目录、会话快照和恢复文件不会被删除。重新安装后需要重新输入令牌并重新签署上传协议（正常更新不受影响）。',
       'uninstall.button': '卸载插件',
       'uninstall.confirmTitle': '确定卸载多端会话同步助手？',
-      'uninstall.confirmDesc': '卸载会移除本机插件和入口，并清空插件本地数据（登录状态、设置、备份、备忘录）；不会删除现有聊天或仓库数据。',
+      'uninstall.confirmDesc': '卸载会移除本机插件和入口，清空插件本地数据（登录状态、设置、备份、备忘录），并删除保存的仓库令牌。重新安装后需重新输入令牌并重新签署协议；正常更新不会。',
       'uninstall.confirm': '确认卸载',
+      'uninstall.typeWord': '卸载',
+      'uninstall.typeLabel': '请输入「卸载」以确认（防止误点）',
       'uninstall.busy': '正在卸载…',
       'uninstall.cancelled': '卸载已取消。',
       'uninstall.done': '已卸载，正在刷新页面…',
@@ -743,6 +826,77 @@ window.__ModuleLoader__.load({
       'backup.restoreConfirm': 'Restore backup',
       'backup.restored': 'Restored {count} file(s)',
       'backup.count': '{count} file(s)',
+      'settings.nav.storage': 'Storage',
+      'settings.section.storageDesc': 'Incremental folder-per-session writes: only changed sessions are uploaded, HEAD is published last.',
+      'storage.usage': '{used} of {quota} used',
+      'storage.transportGit': 'Transport: git commit (one atomic push)',
+      'storage.transportRest': 'Transport: REST per file (manifest and HEAD published atomically)',
+      'storage.gitMissing': 'No local git detected. Use “Back up and reset repository” to reclaim space, or install git to enable in-place compaction.',
+      'storage.check': 'Check again',
+      'storage.checkDone': 'Repository re-checked',
+      'storage.compact': 'Compact repository',
+      'storage.compactDesc': 'Drops Git history only; every current session is kept. Requires local git.',
+      'storage.compactDone': 'Compaction finished; history now holds the current snapshot',
+      'storage.rotate': 'Back up and reset repository',
+      'storage.rotateDesc': 'Backs up local sessions first, then moves the current snapshot to a new repository and keeps the old one as an archive.',
+      'storage.rotateDone': 'Backed up and migrated to a new repository',
+      'storage.resume': 'Resume auto sync',
+      'storage.resumed': 'Auto sync resumed',
+      'storage.recovery': 'Repository needs attention',
+      'storage.recoveryHint': 'Follow the steps below to reclaim capacity, then syncing resumes.',
+      'storage.backupTitle': 'Encrypted local backup',
+      'storage.backupDesc': 'A backup is written automatically before every compaction or reset, and can be taken manually. Backups use AES-256-GCM.',
+      'storage.backupNow': 'Back up now',
+      'storage.backupDone': 'Backup written: {name}',
+      'storage.backupLast': 'Last backup: {time} · {size}',
+      'storage.backupNone': 'No local backup yet',
+      'storage.key': 'Backup key',
+      'storage.keyShow': 'Show',
+      'storage.keyHide': 'Hide',
+      'storage.keyCopy': 'Copy',
+      'storage.keyCopied': 'Backup key copied; keep it somewhere safe',
+      'storage.keyHint': 'The key is stored both in the repository and on this machine; it stays readable here even if the repository is unusable.',
+      'storage.keyNeedsLogin': 'Sign in to view the backup key',
+      'storage.restore': 'Restore latest backup',
+      'storage.restoreDesc': 'Extract the latest encrypted backup back into the local session store, overwriting same-name files.',
+      'storage.restored': 'Restored {sessions} sessions and {attachments} attachments',
+      'storage.includeLocalInfo': 'Include local info in commits (device, OS, host, time) for traceability',
+      'storage.transportTitle': 'Transport',
+      'storage.transport_auto': 'Auto',
+      'storage.transport_git': 'git commit',
+      'storage.transport_rest': 'REST per file',
+      'storage.transportHint': 'Auto: git when available, otherwise REST. git: atomic push and in-place compaction; REST: no git needed, one commit per file, no in-place compaction.',
+      'storage.transportSaved': 'Transport updated',
+      'hero.transport': 'Transport',
+      'hero.transportGitHint': 'git {version} · atomic push, in-place compaction',
+      'hero.transportRestHint': 'per-file writes · no local git needed',
+      'restart.title': 'New version installed — restart DSH',
+      'restart.desc': 'Update to v{version} is on disk but the host still runs the old code. Quit DSH completely (tray too) and reopen, or restart with the button.',
+      'restart.now': 'Restart DSH now',
+      'restart.manualTitle': 'Restart DSH manually',
+      'restart.manualBody': 'This DSH setup does not allow plugins to restart it. The update is already on disk; restart to apply it:',
+      'restart.step1': 'Right-click the DSH tray icon and choose Quit, or end the DeepSeek Harness process in Task Manager',
+      'restart.step2': 'Confirm the tray icon and all related processes are gone',
+      'restart.step3': 'Start DeepSeek Harness again; the plugin loads the new version',
+      'restart.ok': 'Got it',
+      'transport.git': 'git commit',
+      'transport.rest': 'REST per file',
+      'git.detected': 'git {version} detected; commits will use git (atomic push, in-place compaction available).',
+      'git.missingTitle': 'git not detected',
+      'git.missingDesc': 'This plugin recommends git commits: one atomic push and in-place repository compaction. You can also use the REST per-file transport; behaviour is the same, but every file is committed separately and in-place compaction is unavailable.',
+      'git.installWin': 'Windows: winget install --id Git.Git -e, or download from https://git-scm.com/download/win',
+      'git.installMac': 'macOS: xcode-select --install, or brew install git',
+      'git.installLinux': 'Linux: sudo apt install git (Debian/Ubuntu) or sudo dnf install git (Fedora)',
+      'git.installAfter': 'After installing, click “Check again”. If DSH was started from a terminal, reopen the terminal or restart DSH first.',
+      'git.redetect': 'Check again',
+      'git.found': 'git detected; commits will use git',
+      'git.stillMissing': 'git still not detected; confirm the install and restart DSH',
+      'git.useRest': 'Use REST transport',
+      'git.later': 'Not now',
+      'git.restTitle': 'About the REST per-file transport',
+      'git.restDesc': 'No local git required: the plugin calls the Gitee/GitHub API directly, uploads only changed session files, and stores attachments once by sha256. The trade-off is one commit per file (more commits than git), slower first sync, and no in-place force-push compaction; near the quota, use “Back up and reset repository”.',
+      'git.restChosen': 'Switched to the REST per-file transport',
+      'git.hideRest': 'Hide details',
       'maintenance.clear': 'Clear plugin data',
       'maintenance.clearDesc': 'Deletes local plugin login state, saved accounts, settings, backups, and memos. Existing chats and repository data are untouched.',
       'maintenance.clearAction': 'Clear data',
@@ -758,7 +912,7 @@ window.__ModuleLoader__.load({
       'settings.section.collapse': 'Collapse',
       'settings.syncMode': 'Sync mode',
       'settings.syncModeDesc': 'Push and pull both default to incremental: only missing or updated sessions move, everything else is kept. The shared snapshot is replaced only when you explicitly choose “force overwrite”.',
-      'tabs.repair': 'Sessions',
+      'tabs.repair': 'Session repair',
       'errors.unknownAction': 'The host process is still running an older build (the UI is {client}). Quit DSH completely and start it again; reloading the page does not reload the host.',
       'versions.title': 'Earlier versions',
       'picker.title': 'Choose sessions to download',
@@ -790,6 +944,9 @@ window.__ModuleLoader__.load({
       'repair.repairing': 'Repairing…',
       'repair.summary': 'Scanned {scanned} session(s): {sessions} session(s) hold {blocks} missing reference(s)',
       'repair.none': 'Scanned {scanned} session(s): no missing references',
+      'repair.scanClean': 'Scan finished: {scanned} session(s), no missing attachments',
+      'repair.scanFound': 'Scan finished: {scanned} session(s), {missing} missing reference(s)',
+      'repair.scanEmpty': 'The scan returned no result; please retry',
       'repair.item': '{count} ref(s)',
       'repair.done': 'Repaired {sessions} session(s), replaced {blocks} reference(s), backed up {backups} file(s)',
       'repair.note': 'Repair replaces missing image references with placeholder text; the original session file is backed up first. Reopen the session or restart DSH afterwards.',
@@ -802,6 +959,8 @@ window.__ModuleLoader__.load({
       'reg.summary': '{sessions} session(s): {unregistered} unregistered, {missing} with no workspace',
       'reg.none': '{sessions} session(s), all registered',
       'reg.done': 'Registered {repaired} session(s), cleared {cleared} cache file(s); restart DSH to apply',
+      'reg.registryUnavailable': 'The DSH workspace registry was not reachable, so nothing could be registered automatically; reopen the workspace in the sidebar.',
+      'reg.failedSummary': '{count} session(s) failed to register:',
       'reg.unavailable': 'No workspace registry in this environment (host unavailable)',
       'reg.confirmTitle': 'Confirm registration repair',
       'reg.confirmBody': 'Re-attaches {count} session(s) by the cwd in their headers and clears their projection caches; restart DSH afterwards.',
@@ -1000,12 +1159,15 @@ window.__ModuleLoader__.load({
       'push.mode.incremental': 'Merge',
       'push.mode.incrementalDesc': 'Keep the other remote sessions and merge only the selected ones.',
       'push.mode.autoIncremental': 'Partial selection — switched to incremental merge.',
-      'push.pullRequired': 'Another device pushed a newer revision. A forced overwrite replaces the remote snapshot, so pull first; plain incremental merge needs no pull.',
-      'push.pullThenPush': 'Pull first, then force',
+      'push.pullRequired': 'Another device pushed a newer revision. Pull first if you want the latest; you can also merge-submit now (only changed sessions are uploaded).',
+      'push.pullNow': 'Pull remote updates first',
+      'push.submitAnyway': 'Merge-submit anyway',
+      'push.pullFailed': 'Pull failed: {error}',
+      'push.pullThenPush': 'Pull first, then submit',
       'pull.incremental': 'Pull incrementally',
       'pull.force': 'Overwrite local',
       'pull.forceHint': 'Incremental pull only adds missing or newer sessions; overwrite replaces same-path local sessions with the repository copy (backed up first).',
-      'busy.banner': 'Talking to the repository; please wait…',
+      'busy.banner': 'Working on it, please wait…',
       'error.title': 'Something went wrong',
       'error.loginRequired': 'Sign in first',
       'error.agreementRequired': 'Sign the agreement first',
@@ -1079,6 +1241,8 @@ window.__ModuleLoader__.load({
       'uninstall.confirmTitle': 'Uninstall Multi-device session sync?',
       'uninstall.confirmDesc': 'Removes the local plugin and entry, and clears local plugin data (login, settings, backups, memos). Existing chats and repository data are not deleted.',
       'uninstall.confirm': 'Uninstall',
+      'uninstall.typeWord': 'UNINSTALL',
+      'uninstall.typeLabel': 'Type UNINSTALL to confirm (guards against accidental clicks)',
       'uninstall.busy': 'Uninstalling…',
       'uninstall.cancelled': 'Uninstall cancelled.',
       'uninstall.done': 'Uninstalled. Reloading…',
@@ -1178,15 +1342,15 @@ window.__ModuleLoader__.load({
       setStore({ notice: { id: Date.now(), text, kind } });
       noticeTimer = setTimeout(() => {
         if (store.notice) setStore({ notice: null });
-      }, 20000);
+      }, TOAST_DURATION_MS);
     }
 
     function showToast(text, kind = 'info', action = null) {
       if (toastTimer) clearTimeout(toastTimer);
-      setStore({ toast: { id: Date.now(), text, kind, action } });
+      setStore({ toast: { id: Date.now(), text, kind, action, duration: TOAST_DURATION_MS } });
       toastTimer = setTimeout(() => {
         if (store.toast) setStore({ toast: null });
-      }, action ? 9000 : 4200);
+      }, TOAST_DURATION_MS);
     }
 
     class ApiError extends Error {
@@ -1213,11 +1377,12 @@ window.__ModuleLoader__.load({
       }
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || data.ok !== true) {
-        throw new ApiError(
-          (data && data.error) || `HTTP ${response.status}`,
-          (data && data.code) || 'api',
-          data && data.details,
-        );
+        const base = (data && data.error) || `HTTP ${response.status}`;
+        const detail = data && data.details && data.details.detail;
+        const message = detail && !String(base).includes(String(detail))
+          ? `${base}（${detail}）`
+          : base;
+        throw new ApiError(message, (data && data.code) || 'api', data && data.details);
       }
       return data;
     }
@@ -1745,8 +1910,21 @@ window.__ModuleLoader__.load({
         return () => window.removeEventListener('pointerdown', onPointerDown, true);
       }, [notice?.id]);
       if (!notice) return null;
-      return h('div', { className: `dcs-notice dcs-notice--${notice.kind || 'info'}`, ref, role: 'status' },
-        notice.kind === 'error' ? h(AlertIcon, { size: 15 }) : notice.kind === 'success' ? h(CheckIcon, { size: 15 }) : h(SyncIcon, { size: 15 }),
+      return h('div', {
+        className: `dcs-notice dcs-notice--${notice.kind || 'info'}`,
+        ref,
+        role: 'status',
+        style: {
+          minWidth: 'min(340px, calc(100vw - 40px))',
+          maxWidth: 'min(520px, calc(100vw - 40px))',
+          fontSize: '15.5px',
+          padding: '26px 24px',
+          borderRadius: '16px',
+          borderWidth: '2px',
+          gap: '12px',
+        },
+      },
+        notice.kind === 'error' ? h(AlertIcon, { size: 20 }) : notice.kind === 'success' ? h(CheckIcon, { size: 20 }) : h(SyncIcon, { size: 20 }),
         h('span', { className: 'dcs-notice-text' }, notice.text),
         h('button', {
           type: 'button',
@@ -1759,10 +1937,34 @@ window.__ModuleLoader__.load({
 
     function Toast({ toast }) {
       const action = toast.action;
-      return h('div', { className: `dcs-toast dcs-toast--${toast.kind || 'info'}`, role: 'status' },
-        toast.kind === 'error' ? h(AlertIcon, { size: 16 })
-          : toast.kind === 'success' ? h(CheckIcon, { size: 16 })
-            : h(SyncIcon, { size: 16 }),
+      const ref = React.useRef(null);
+      /* Soft reminders: clicking anywhere outside the bar dismisses it, in
+       * addition to the × button and the 40 s countdown. */
+      React.useEffect(() => {
+        const onPointerDown = (event) => {
+          if (ref.current && !ref.current.contains(event.target)) setStore({ toast: null });
+        };
+        window.addEventListener('pointerdown', onPointerDown, true);
+        return () => window.removeEventListener('pointerdown', onPointerDown, true);
+      }, [toast.id]);
+      return h('div', {
+        ref,
+        className: `dcs-toast dcs-toast--${toast.kind || 'info'}`,
+        role: 'status',
+        'aria-live': 'polite',
+        style: {
+          minWidth: 'min(340px, calc(100vw - 40px))',
+          maxWidth: 'min(520px, calc(100vw - 40px))',
+          fontSize: '15.5px',
+          padding: '26px 26px 30px',
+          borderRadius: '16px',
+          borderWidth: '2px',
+          gap: '14px',
+        },
+      },
+        toast.kind === 'error' ? h(AlertIcon, { size: 20 })
+          : toast.kind === 'success' ? h(CheckIcon, { size: 20 })
+            : h(SyncIcon, { size: 20 }),
         h('span', { className: 'dcs-toast-text' }, toast.text),
         action ? h('button', {
           type: 'button',
@@ -1772,6 +1974,17 @@ window.__ModuleLoader__.load({
             action.onClick();
           },
         }, action.label) : null,
+        h('button', {
+          type: 'button',
+          className: 'dcs-toast-close',
+          title: tr('actions.close'),
+          'aria-label': tr('actions.close'),
+          onClick: () => setStore({ toast: null }),
+        }, '×'),
+        h('span', {
+          className: 'dcs-toast-progress',
+          style: { animationDuration: `${toast.duration || TOAST_DURATION_MS}ms` },
+        }),
       );
     }
 
@@ -2295,6 +2508,80 @@ window.__ModuleLoader__.load({
       );
     }
 
+    function GitSetupNotice({ state }) {
+      const storage = state.storage || {};
+      const [busy, setBusy] = React.useState(false);
+      const [details, setDetails] = React.useState(false);
+      const saveSettings = async (patch, message) => {
+        setBusy(true);
+        try {
+          const result = await api('settings', patch);
+          if (result.state) setStore({ state: result.state });
+          if (message) showToast(message, 'success');
+        } catch (caught) {
+          showToast(caught.message, 'error');
+        } finally {
+          setBusy(false);
+        }
+      };
+      const redetect = async () => {
+        setBusy(true);
+        try {
+          const result = await api('detect-git');
+          if (result.state) setStore({ state: result.state });
+          showToast(result.available ? tr('git.found') : tr('git.stillMissing'), result.available ? 'success' : 'error');
+        } catch (caught) {
+          showToast(caught.message, 'error');
+        } finally {
+          setBusy(false);
+        }
+      };
+      /* When git is present the transport line in the hero already says so; no
+       * full-width bar is needed. The install guidance only appears when git is
+       * actually missing. */
+      if (storage.gitAvailable) return null;
+      if (storage.gitPromptDismissed) return null;
+      return h('div', { className: 'dcs-git-note is-warn' },
+        h('div', { className: 'dcs-git-note-head' },
+          h(AlertIcon, { size: 16 }),
+          h('strong', null, tr('git.missingTitle'))),
+        h('p', null, tr('git.missingDesc')),
+        h('div', { className: 'dcs-git-note-cmds' },
+          h('p', null, tr('git.installWin')),
+          h('p', null, tr('git.installMac')),
+          h('p', null, tr('git.installLinux'))),
+        h('p', { className: 'dcs-field-hint' }, tr('git.installAfter')),
+        h('div', { className: 'dcs-storage-actions' },
+          h('button', {
+            type: 'button',
+            className: 'dcs-btn dcs-btn--primary dcs-btn--small',
+            disabled: busy,
+            onClick: redetect,
+          }, tr('git.redetect')),
+          h('button', {
+            type: 'button',
+            className: 'dcs-btn dcs-btn--ghost dcs-btn--small',
+            disabled: busy,
+            onClick: () => saveSettings({ transport: 'rest', gitPromptDismissed: true }, tr('git.restChosen')),
+          }, tr('git.useRest')),
+          h('button', {
+            type: 'button',
+            className: 'dcs-btn dcs-btn--ghost dcs-btn--small',
+            disabled: busy,
+            onClick: () => saveSettings({ gitPromptDismissed: true }),
+          }, tr('git.later')),
+          h('button', {
+            type: 'button',
+            className: 'dcs-btn dcs-btn--ghost dcs-btn--small',
+            onClick: () => setDetails(!details),
+          }, details ? tr('git.hideRest') : tr('git.restTitle'))),
+        details
+          ? h('div', { className: 'dcs-git-note-details' },
+            h('strong', null, tr('git.restTitle')),
+            h('p', null, tr('git.restDesc')))
+          : null);
+    }
+
     function LoginView({ state }) {
       const providers = state?.providers || {};
       const [provider, setProvider] = React.useState(state?.provider || 'gitee');
@@ -2377,6 +2664,7 @@ window.__ModuleLoader__.load({
               h('p', { className: 'dcs-login-subtitle' }, tr('login.subtitle')),
             ),
           ),
+          h(GitSetupNotice, { state }),
           h('form', { className: 'dcs-login-form', onSubmit: submit },
             h(Field, { label: tr('login.provider') },
               h(ProviderSwitch, { value: provider, onChange: setProvider, providers })),
@@ -2635,6 +2923,61 @@ window.__ModuleLoader__.load({
       );
     }
 
+    /**
+     * Persisted restart prompt. It is driven by host state, so it survives the
+     * page reload that an online update can trigger (a plain toast does not).
+     */
+    function RestartBanner({ state }) {
+      const pending = state.pendingRestart;
+      const [busy, setBusy] = React.useState(false);
+      const [help, setHelp] = React.useState(false);
+      if (!pending?.version) return null;
+      const restart = async () => {
+        if (busy) return;
+        setBusy(true);
+        try {
+          const result = await perform('restart-host', {}, { silent: true });
+          if (result && result.ok === false) {
+            setBusy(false);
+            setHelp(true);
+          }
+        } catch (error) {
+          /* The host may already be going down. */
+          if (error && error.code === 'network') return;
+          setBusy(false);
+          setHelp(true);
+        }
+      };
+      return h(React.Fragment, null,
+        h('div', { className: 'dcs-restart-banner', role: 'status' },
+          h(SyncIcon, { size: 20 }),
+          h('div', { className: 'dcs-restart-copy' },
+            h('strong', null, tr('restart.title')),
+            h('p', null, tr('restart.desc', { version: pending.version }))),
+          h('button', {
+            type: 'button',
+            className: 'dcs-btn dcs-btn--primary dcs-btn--small',
+            disabled: busy,
+            onClick: restart,
+          }, busy ? tr('pluginUpdate.restarting') : tr('restart.now'))),
+        help
+          ? h(Modal, {
+            title: tr('restart.manualTitle'),
+            subtitle: tr('restart.manualBody'),
+            onClose: () => setHelp(false),
+            footer: h('button', {
+              type: 'button',
+              className: 'dcs-btn dcs-btn--primary',
+              onClick: () => setHelp(false),
+            }, tr('restart.ok')),
+          },
+            h('ol', { className: 'dcs-restart-steps' },
+              h('li', null, tr('restart.step1')),
+              h('li', null, tr('restart.step2')),
+              h('li', null, tr('restart.step3'))))
+          : null);
+    }
+
     function Hero({ state }) {
       const status = statusOf(state);
       const account = state.account;
@@ -2656,7 +2999,7 @@ window.__ModuleLoader__.load({
           ),
         ),
         h('div', { className: 'dcs-hero-meta' },
-          h('div', { className: 'dcs-hero-meta-item' },
+          h('div', { className: 'dcs-hero-meta-item dcs-hero-meta-item--wide' },
             h(Avatar, { account }),
             h('div', null,
               h('span', { className: 'dcs-meta-label' }, tr('hero.account')),
@@ -2681,6 +3024,19 @@ window.__ModuleLoader__.load({
               h('span', { className: 'dcs-meta-sub' }, repo?.private ? tr('hero.private') : '', repo?.defaultBranch ? ` · ${tr('hero.branch', { branch: repo.defaultBranch })}` : ''),
             ),
           ),
+          h('div', { className: 'dcs-hero-meta-item' },
+            h('span', { className: 'dcs-meta-glyph' }, h(CloudIcon, { size: 17 })),
+            h('div', null,
+              h('span', { className: 'dcs-meta-label' }, tr('hero.transport')),
+              h('strong', null, state.account
+                ? (state.storage?.transport === 'git' ? tr('transport.git') : tr('transport.rest'))
+                : '—'),
+              state.account
+                ? h('span', { className: 'dcs-meta-sub' },
+                  state.storage?.transport === 'git'
+                    ? tr('hero.transportGitHint', { version: state.storage?.gitVersion || 'git' })
+                    : tr('hero.transportRestHint'))
+                : null)),
           h('div', { className: 'dcs-hero-meta-item' },
             h('span', { className: 'dcs-meta-glyph' }, h(CheckIcon, { size: 17 })),
             h('div', null,
@@ -2927,7 +3283,7 @@ window.__ModuleLoader__.load({
         setSelected(allSelected ? new Set() : new Set(sessions.map((session) => session.relPath)));
       };
 
-      const submit = async () => {
+      const submit = async (allowRemoteAhead = false) => {
         if (busy || !selected.size) return;
         if (needsPassphrase && !passphrase) {
           setError(tr('encryption.passphraseRequired'));
@@ -2951,6 +3307,7 @@ window.__ModuleLoader__.load({
             allSelected,
             passphrase,
             sessionRelPaths: [...selected],
+            allowRemoteAhead: allowRemoteAhead === true,
           });
           if (progressTimer.current) clearInterval(progressTimer.current);
           progressTimer.current = null;
@@ -3087,6 +3444,13 @@ window.__ModuleLoader__.load({
                     onClick: pullThenPush,
                   },
                   tr('push.pullThenPush')),
+                  h('button', {
+                    type: 'button',
+                    className: 'dcs-btn dcs-btn--primary dcs-btn--small',
+                    disabled: busy,
+                    onClick: () => submit(true),
+                  },
+                  tr('push.submitAnyway')),
                 )
                 : null,
             )
@@ -3660,7 +4024,19 @@ window.__ModuleLoader__.load({
         setResult(null);
         try {
           const report = await perform('repair-attachments', { dryRun: true }, { silent: true });
+          if (!report || typeof report !== 'object') {
+            showToast(tr('repair.scanEmpty'), 'error');
+            return;
+          }
           setScan(report);
+          const scanned = Number(report.scanned) || 0;
+          const missing = Number(report.replaced) || 0;
+          showToast(
+            missing > 0
+              ? tr('repair.scanFound', { scanned, missing })
+              : tr('repair.scanClean', { scanned }),
+            missing > 0 ? 'warning' : 'success',
+          );
         } catch (caught) {
           setError(caught.message);
         } finally {
@@ -3789,6 +4165,17 @@ window.__ModuleLoader__.load({
             : null,
           regResult
             ? h('p', { className: 'dcs-repair-done' }, tr('reg.done', { repaired: regResult.repaired || 0, cleared: regResult.cacheCleared || 0 }))
+            : null,
+          regResult && regResult.reconcileAvailable === false
+            ? h('p', { className: 'dcs-inline-warning dcs-inline-warning--amber' }, tr('reg.registryUnavailable'))
+            : null,
+          regResult && Array.isArray(regResult.failed) && regResult.failed.length
+            ? h('div', { className: 'dcs-repair-report' },
+              h('p', null, tr('reg.failedSummary', { count: regResult.failed.length })),
+              h('ul', { className: 'dcs-repair-list' },
+                regResult.failed.slice(0, 6).map((item, index) => h('li', { key: `${item.sessionId}-${index}` },
+                  h('code', { className: 'dcs-code' }, item.sessionId),
+                  h('span', { className: 'dcs-muted' }, item.reason)))))
             : null,
           regError ? h(ErrorLine, null, regError) : null,
           h('p', { className: 'dcs-fineprint dcs-fineprint--muted' }, tr('reg.note')),
@@ -4162,6 +4549,8 @@ window.__ModuleLoader__.load({
       const [busy, setBusy] = React.useState(false);
       const [error, setError] = React.useState('');
       const [done, setDone] = React.useState('');
+      const [typed, setTyped] = React.useState('');
+      const confirmWord = tr('uninstall.typeWord');
       const manager = () => {
         try {
           return runtime.remote && runtime.remote.pluginManager ? runtime.remote.pluginManager : null;
@@ -4178,6 +4567,16 @@ window.__ModuleLoader__.load({
         }
         setBusy(true);
         setError('');
+        /* Full local cleanup must run before the bundle is removed: afterwards
+         * this host action no longer exists, and the login must not survive an
+         * uninstall (token records live in DSH credentials, outside the profile). */
+        try {
+          await api('uninstall-cleanup');
+        } catch (caught) {
+          setError(caught.message || tr('uninstall.failedGeneric'));
+          setBusy(false);
+          return;
+        }
         try {
           const answer = await pluginManager.removeBundle(PACKAGE_NAME);
           if (!answer || answer.ok === false) {
@@ -4199,11 +4598,7 @@ window.__ModuleLoader__.load({
             setDone('restart');
             return;
           }
-          try {
-            await api('uninstall-cleanup');
-          } catch {
-            /* Profile cleanup is best effort; the plugin manager may already have removed it. */
-          }
+
           let stillInstalled = false;
           if (typeof pluginManager.listBundles === 'function') {
             try {
@@ -4252,10 +4647,26 @@ window.__ModuleLoader__.load({
           ? h('button', { type: 'button', className: 'dcs-btn dcs-btn--primary', onClick: onClose }, tr('actions.close'))
           : h(React.Fragment, null,
             h('button', { type: 'button', className: 'dcs-btn dcs-btn--ghost', disabled: busy, onClick: onClose }, tr('actions.cancel')),
-            h('button', { type: 'button', className: 'dcs-btn dcs-btn--danger', disabled: busy, onClick: uninstall },
-              busy ? tr('uninstall.busy') : tr('uninstall.confirm'))),
+            h('button', {
+              type: 'button',
+              className: 'dcs-btn dcs-btn--danger',
+              disabled: busy || typed.trim() !== confirmWord,
+              onClick: uninstall,
+            },
+            busy ? tr('uninstall.busy') : tr('uninstall.confirm'))),
       },
         h('p', { className: 'dcs-fineprint' }, tr('uninstall.keepData')),
+        h('label', { className: 'dcs-field-label', htmlFor: 'dcs-uninstall-confirm' }, tr('uninstall.typeLabel')),
+        h('input', {
+          id: 'dcs-uninstall-confirm',
+          className: 'dcs-input',
+          value: typed,
+          autoComplete: 'off',
+          spellCheck: false,
+          placeholder: confirmWord,
+          disabled: busy || Boolean(done),
+          onChange: (event) => setTyped(event.target.value),
+        }),
         message ? h('div', { className: 'dcs-inline-warning dcs-inline-warning--amber' }, h(AlertIcon, { size: 16 }), h('span', null, message)) : null,
         error ? h(ErrorLine, null, error) : null,
       );
@@ -4825,12 +5236,239 @@ window.__ModuleLoader__.load({
     }
 
 
+    function StoragePanel({ state }) {
+      const storage = state.storage || {};
+      const usage = storage.usage || {};
+      const recovery = state.recovery || {};
+      const [busy, setBusy] = React.useState('');
+      const [confirming, setConfirming] = React.useState('');
+      const [backupKey, setBackupKey] = React.useState('');
+      const [keyVisible, setKeyVisible] = React.useState(false);
+      const [backups, setBackups] = React.useState([]);
+      const ratio = Math.max(0, Math.min(1, Number(usage.ratio) || 0));
+      const percent = Math.round(ratio * 100);
+      const refreshBackups = React.useCallback(async () => {
+        if (!state.account) return;
+        try {
+          const result = await api('backup-list');
+          setBackups(result.items || []);
+        } catch {
+          setBackups([]);
+        }
+      }, [state.account]);
+      React.useEffect(() => { refreshBackups(); }, [refreshBackups, state.backup?.lastAt]);
+      const run = async (action, payload, okText) => {
+        setBusy(action);
+        try {
+          const result = await api(action, payload || {});
+          if (result && result.state) setStore({ state: result.state });
+          if (okText) showToast(okText, 'success');
+          return result;
+        } catch (caught) {
+          showToast(caught.message, 'error');
+          return null;
+        } finally {
+          setBusy('');
+          setConfirming('');
+        }
+      };
+      const compact = () => run('compact-repo', {}, tr('storage.compactDone'));
+      const rotate = () => run('rotate-repo', {}, tr('storage.rotateDone'));
+      const doBackup = async () => {
+        setBusy('backup');
+        try {
+          const result = await api('backup-now');
+          if (result.state) setStore({ state: result.state });
+          showToast(tr('storage.backupDone', { name: result.name }), 'success');
+          refreshBackups();
+        } catch (caught) {
+          showToast(caught.message, 'error');
+        } finally {
+          setBusy('');
+        }
+      };
+      const revealKey = async () => {
+        if (keyVisible) {
+          setKeyVisible(false);
+          return;
+        }
+        if (backupKey) {
+          setKeyVisible(true);
+          return;
+        }
+        try {
+          const result = await api('backup-key');
+          setBackupKey(result.key || '');
+          setKeyVisible(true);
+        } catch (caught) {
+          showToast(caught.message, 'error');
+        }
+      };
+      const copyKey = async () => {
+        try {
+          const key = backupKey || (await api('backup-key')).key || '';
+          setBackupKey(key);
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(key);
+          }
+          showToast(tr('storage.keyCopied'), 'success');
+        } catch (caught) {
+          showToast(caught.message, 'error');
+        }
+      };
+      const restoreLatest = async () => {
+        if (!backups.length) return;
+        setBusy('restore');
+        try {
+          const result = await api('restore-backup-file', { name: backups[0].name });
+          if (result.state) setStore({ state: result.state });
+          showToast(tr('storage.restored', { sessions: result.sessions, attachments: result.attachments }), 'success');
+        } catch (caught) {
+          showToast(caught.message, 'error');
+        } finally {
+          setBusy('');
+          setConfirming('');
+        }
+      };
+      return h('div', { className: 'dcs-storage' },
+        h('div', { className: 'dcs-storage-bar', role: 'progressbar', 'aria-valuenow': percent, 'aria-valuemin': 0, 'aria-valuemax': 100 },
+          h('span', {
+            className: `dcs-storage-fill is-${usage.level || 'ok'}`,
+            style: { width: `${Math.max(percent, 2)}%` },
+          })),
+        h('div', { className: 'dcs-storage-meta' },
+          h('span', null, tr('storage.usage', { used: formatBytes(usage.bytes || 0), quota: formatBytes(usage.quota || 0) })),
+          h('span', { className: `dcs-storage-pct is-${usage.level || 'ok'}` }, `${percent}%`)),
+        h('p', { className: 'dcs-field-hint' }, storage.transport === 'git' ? tr('storage.transportGit') : tr('storage.transportRest')),
+        storage.transport !== 'git' ? h('p', { className: 'dcs-field-hint' }, tr('storage.gitMissing')) : null,
+        h('div', { className: 'dcs-transport' },
+          h('span', { className: 'dcs-field-label' }, tr('storage.transportTitle')),
+          h('div', { className: 'dcs-storage-actions' },
+            ['auto', 'git', 'rest'].map((mode) => h('button', {
+              type: 'button',
+              key: mode,
+              className: `dcs-btn dcs-btn--small ${((storage.transportPreference || 'auto') === mode) ? 'dcs-btn--primary' : 'dcs-btn--ghost'}`,
+              disabled: Boolean(busy) || (mode === 'git' && !storage.gitAvailable),
+              onClick: () => run('settings', { transport: mode }, tr('storage.transportSaved')),
+            }, tr(`storage.transport_${mode}`)))),
+          h('p', { className: 'dcs-field-hint' }, tr('storage.transportHint')),
+          (storage.transportPreference === 'rest')
+            ? h('div', { className: 'dcs-git-note is-warn' },
+              h('strong', null, tr('git.restTitle')),
+              h('p', null, tr('git.restDesc')))
+            : null),
+        recovery.needed
+          ? h('div', { className: 'dcs-inline-warning dcs-inline-warning--amber' },
+            h(AlertIcon, { size: 16 }),
+            h('div', null,
+              h('strong', null, tr('storage.recovery')),
+              h('p', null, tr('storage.recoveryHint')),
+              h('ul', { className: 'dcs-storage-steps' },
+                (recovery.steps || []).map((step, index) => h('li', { key: index }, step)))))
+          : null,
+        h('div', { className: 'dcs-storage-actions' },
+          h('button', {
+            type: 'button',
+            className: 'dcs-btn dcs-btn--ghost',
+            disabled: Boolean(busy),
+            onClick: () => run('check', {}, tr('storage.checkDone')),
+          }, tr('storage.check')),
+          h('button', {
+            type: 'button',
+            className: 'dcs-btn dcs-btn--ghost',
+            disabled: Boolean(busy) || storage.transport !== 'git',
+            onClick: compact,
+            title: storage.transport === 'git' ? tr('storage.compactDesc') : tr('storage.gitMissing'),
+          }, tr('storage.compact')),
+          h('button', {
+            type: 'button',
+            className: 'dcs-btn dcs-btn--ghost',
+            disabled: Boolean(busy),
+            onClick: () => setConfirming('rotate'),
+          }, tr('storage.rotate')),
+          state.sync?.suspended
+            ? h('button', {
+              type: 'button',
+              className: 'dcs-btn dcs-btn--primary',
+              disabled: Boolean(busy),
+              onClick: () => run('settings', { resumeSync: true }, tr('storage.resumed')),
+            }, tr('storage.resume'))
+            : null),
+        h('div', { className: 'dcs-backup' },
+          h('h3', { className: 'dcs-subsection-title' }, tr('storage.backupTitle')),
+          h('p', { className: 'dcs-field-hint' }, tr('storage.backupDesc')),
+          h('div', { className: 'dcs-storage-actions' },
+            h('button', {
+              type: 'button',
+              className: 'dcs-btn dcs-btn--ghost',
+              disabled: Boolean(busy),
+              onClick: doBackup,
+            }, tr('storage.backupNow')),
+            backups.length > 0
+              ? h('button', {
+                type: 'button',
+                className: 'dcs-btn dcs-btn--ghost',
+                disabled: Boolean(busy),
+                onClick: () => setConfirming('restore'),
+              }, tr('storage.restore'))
+              : null),
+          h('div', { className: 'dcs-backup-key' },
+            h('span', { className: 'dcs-field-label' }, tr('storage.key')),
+            h('code', { className: 'dcs-backup-key-value' }, keyVisible ? (backupKey || '…') : '••••••••••••'),
+            h('button', {
+              type: 'button',
+              className: 'dcs-btn dcs-btn--ghost dcs-btn--small',
+              disabled: !state.account,
+              onClick: revealKey,
+            }, keyVisible ? tr('storage.keyHide') : tr('storage.keyShow')),
+            h('button', {
+              type: 'button',
+              className: 'dcs-btn dcs-btn--ghost dcs-btn--small',
+              disabled: !state.account,
+              onClick: copyKey,
+            }, tr('storage.keyCopy'))),
+          h('p', { className: 'dcs-field-hint' }, state.account ? tr('storage.keyHint') : tr('storage.keyNeedsLogin')),
+          h('label', { className: 'dcs-check-row' },
+            h('input', {
+              type: 'checkbox',
+              checked: state.storage?.includeLocalInfo !== false,
+              disabled: !state.account,
+              onChange: (event) => run('settings', { includeLocalInfo: event.target.checked }, null),
+            }),
+            h('span', null, tr('storage.includeLocalInfo'))),
+          h('p', { className: 'dcs-field-hint' }, state.backup?.lastAt
+            ? tr('storage.backupLast', { time: formatTime(state.backup.lastAt), size: formatBytes(state.backup.lastBytes) })
+            : tr('storage.backupNone'))),
+        confirming === 'restore'
+          ? h(ConfirmDialog, {
+            title: tr('storage.restore'),
+            message: tr('storage.restoreDesc'),
+            confirmLabel: tr('storage.restore'),
+            danger: true,
+            onClose: busy ? null : () => setConfirming(''),
+            onConfirm: restoreLatest,
+          })
+          : null,
+        confirming === 'rotate'
+          ? h(ConfirmDialog, {
+            title: tr('storage.rotate'),
+            message: tr('storage.rotateDesc'),
+            confirmLabel: tr('storage.rotate'),
+            danger: true,
+            onClose: busy ? null : () => setConfirming(''),
+            onConfirm: rotate,
+          })
+          : null,
+      );
+    }
+
     function SettingsView({ state }) {
       const version = state.version || VERSION;
       const [openSection, setOpenSection] = React.useState('account');
       const nav = [
         ['account', tr('settings.nav.account')],
         ['sync', tr('settings.nav.sync')],
+        ['storage', tr('settings.nav.storage')],
         ['encryption', tr('settings.nav.encryption')],
         ['data', tr('settings.nav.data')],
         ['legal', tr('settings.nav.legal')],
@@ -4874,6 +5512,18 @@ window.__ModuleLoader__.load({
           onToggle: () => setOpenSection(openSection === 'sync' ? null : 'sync'),
           status: h(Badge, { tone: 'neutral' }, tr('settings.incremental')),
         }, h(SettingsPanel, { state })),
+        h(SettingsSection, {
+          id: 'dcs-settings-storage',
+          index: '02b',
+          title: tr('settings.nav.storage'),
+          desc: tr('settings.section.storageDesc'),
+          open: openSection === 'storage',
+          onToggle: () => setOpenSection(openSection === 'storage' ? null : 'storage'),
+          status: h(Badge, {
+            tone: state.storage?.usage?.level === 'hard' ? 'danger' : state.storage?.usage?.level === 'warn' ? 'warning' : 'neutral',
+            dot: true,
+          }, `${Math.round((Number(state.storage?.usage?.ratio) || 0) * 100)}%`),
+        }, h(StoragePanel, { state })),
         h(SettingsSection, {
           id: 'dcs-settings-encryption',
           index: '03',
@@ -5162,7 +5812,17 @@ window.__ModuleLoader__.load({
       const [tab, setTab] = React.useState('sync');
       return h('div', { className: 'dcs-dashboard' },
         h(Hero, { state }),
+        h(RestartBanner, { state }),
         h(ReloadHint),
+        h(GitSetupNotice, { state }),
+        state.recovery?.needed
+          ? h('div', { className: 'dcs-inline-warning dcs-inline-warning--red' },
+            h(AlertIcon, { size: 16 }),
+            h('div', null,
+              h('strong', null, tr('storage.recovery')),
+              h('div', null, (state.recovery.steps || [])[0] || ''),
+              h('div', null, tr('storage.recoveryHint'))))
+          : null,
         state && state.version && state.version !== VERSION
           ? h('div', { className: 'dcs-inline-warning dcs-inline-warning--amber' },
             h(AlertIcon, { size: 16 }),
@@ -5179,13 +5839,6 @@ window.__ModuleLoader__.load({
           h('button', {
             type: 'button',
             role: 'tab',
-            'aria-selected': tab === 'memo',
-            className: `dcs-tab${tab === 'memo' ? ' is-active' : ''}`,
-            onClick: () => setTab('memo'),
-          }, tr('tabs.memo')),
-          h('button', {
-            type: 'button',
-            role: 'tab',
             'aria-selected': tab === 'settings',
             className: `dcs-tab${tab === 'settings' ? ' is-active' : ''}`,
             onClick: () => setTab('settings'),
@@ -5197,6 +5850,13 @@ window.__ModuleLoader__.load({
             className: `dcs-tab${tab === 'repair' ? ' is-active' : ''}`,
             onClick: () => setTab('repair'),
           }, tr('tabs.repair')),
+          h('button', {
+            type: 'button',
+            role: 'tab',
+            'aria-selected': tab === 'memo',
+            className: `dcs-tab${tab === 'memo' ? ' is-active' : ''}`,
+            onClick: () => setTab('memo'),
+          }, tr('tabs.memo')),
         ),
         tab === 'sync'
           ? h('div', { className: 'dcs-sync-view' },
@@ -5339,7 +5999,7 @@ body[data-ds-dark-theme] .dcs-portal-host {
 .dcs-spinner { width: 22px; height: 22px; border: 2.5px solid var(--dcs-line); border-top-color: var(--dcs-accent); border-radius: 50%; animation: dcs-spin .8s linear infinite; display: inline-block; }
 .dcs-spinner--small { width: 14px; height: 14px; border-width: 2px; }
 @keyframes dcs-spin { to { transform: rotate(360deg); } }
-.dcs-busy-bar { display: flex; align-items: center; gap: 9px; padding: 10px 14px; margin-bottom: 16px; border: 1px solid var(--dcs-accent-line); border-radius: 10px; background: var(--dcs-accent-soft); color: var(--dcs-ink); font-size: 13px; }
+.dcs-busy-bar { display: flex; align-items: center; gap: 9px; padding: 12px 16px; margin-bottom: 16px; border: 1.5px solid #f0cf90; border-radius: 12px; background: #fdf3df; color: #8a4b06; font-size: 13px; }
 .dcs-hero { position: relative; overflow: hidden; padding: 26px 28px 22px; border: 1px solid var(--dcs-line); border-radius: 20px; background:
   radial-gradient(1000px 340px at 0% -20%, color-mix(in srgb, var(--dcs-accent) 11%, transparent), transparent 62%),
   linear-gradient(180deg, color-mix(in srgb, var(--dcs-layer) 72%, var(--dcs-bg)), var(--dcs-bg));
@@ -5363,10 +6023,11 @@ body[data-ds-dark-theme] .dcs-portal-host {
 .dcs-hero-version { color: var(--dcs-muted); font-size: 11.5px; }
 .dcs-hero-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--dcs-line); }
 .dcs-hero-meta-item { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.dcs-hero-meta-item--wide { grid-column: 1 / -1; padding-bottom: 10px; border-bottom: 1px dashed var(--dcs-line); }
 .dcs-hero-meta-item > div { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .dcs-meta-label { color: var(--dcs-muted); font-size: 11px; letter-spacing: .02em; }
 .dcs-hero-meta-item strong, .dcs-meta-link { font-size: 12.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dcs-meta-sub { color: var(--dcs-muted); font-size: 11px; }
+.dcs-meta-sub { display: block; margin-top: 2px; color: var(--dcs-muted); font-size: 11px; }
 .dcs-meta-glyph { flex: none; width: 32px; height: 32px; display: grid; place-items: center; border-radius: 10px; color: var(--dcs-muted); background: color-mix(in srgb, var(--dcs-ink) 5%, transparent); }
 .dcs-meta-link, .dcs-link-btn { color: var(--dcs-accent); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
 .dcs-meta-link:hover, .dcs-link-btn:hover { text-decoration: underline; }
@@ -5375,7 +6036,8 @@ body[data-ds-dark-theme] .dcs-portal-host {
 .dcs-layout { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(300px, .85fr); gap: 14px; align-items: start; }
 .dcs-tabs { position: relative; z-index: 5; display: inline-flex; align-self: flex-start; gap: 4px; padding: 4px; border: 1px solid var(--dcs-line); border-radius: 11px; background: var(--dcs-layer); }
 .dcs-tab { border: 0; border-radius: 8px; background: transparent; color: var(--dcs-muted); padding: 9px 24px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
-.dcs-tab.is-active { background: var(--dcs-bg); color: var(--dcs-ink); box-shadow: 0 1px 2px rgba(16, 24, 40, .08); }
+.dcs-tab.is-active { background: #fdf3df; color: #8a4b06; box-shadow: inset 0 0 0 1px #f0cf90, 0 1px 2px rgba(16, 24, 40, .06); }
+body[data-ds-dark-theme] .dcs-tab.is-active { background: #2a1e0d; color: #f7bd6d; box-shadow: inset 0 0 0 1px #7a4c12; }
 .dcs-sync-view { width: 100%; display: flex; flex-direction: column; gap: 14px; }
 .dcs-settings-page { position: relative; isolation: isolate; width: 100%; display: flex; flex-direction: column; gap: 10px; }
 .dcs-settings-nav { position: sticky; top: 0; z-index: 30; display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 0 11px; background: var(--dcs-bg); border-bottom: 1px solid var(--dcs-line); box-shadow: 0 -34px 0 0 var(--dcs-bg), 0 1px 0 var(--dcs-line), 0 10px 18px -18px rgba(16, 24, 40, .4); }
@@ -5580,6 +6242,36 @@ body[data-ds-dark-theme] .dcs-portal-host {
 .dcs-inline-warning--amber { border-color: color-mix(in srgb, var(--dcs-warning) 30%, transparent); }
 .dcs-error-line { display: flex; align-items: flex-start; gap: 8px; margin-top: 10px; padding: 9px 11px; border-radius: 9px; border: 1px solid color-mix(in srgb, var(--dcs-danger) 28%, transparent); background: color-mix(in srgb, var(--dcs-danger) 8%, transparent); color: var(--dcs-danger); font-size: 12px; line-height: 1.45; }
 .dcs-error-line svg { flex: none; margin-top: 1px; }
+.dcs-storage { display: flex; flex-direction: column; gap: 8px; }
+.dcs-storage-bar { position: relative; height: 8px; border-radius: 999px; background: var(--dcs-line); overflow: hidden; }
+.dcs-storage-fill { display: block; height: 100%; border-radius: 999px; background: var(--dcs-success); transition: width .3s ease; }
+.dcs-storage-fill.is-warn { background: var(--dcs-warning); }
+.dcs-storage-fill.is-hard { background: var(--dcs-danger); }
+.dcs-storage-meta { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font-size: 11.5px; color: var(--dcs-muted); }
+.dcs-storage-pct { font-variant-numeric: tabular-nums; color: var(--dcs-ink); }
+.dcs-storage-pct.is-warn { color: var(--dcs-warning); }
+.dcs-storage-pct.is-hard { color: var(--dcs-danger); }
+.dcs-storage-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+.dcs-storage-steps { margin: 4px 0 0; padding-left: 18px; font-size: 11.5px; line-height: 1.6; }
+.dcs-backup { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--dcs-line); display: flex; flex-direction: column; gap: 6px; }
+.dcs-backup-key { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.dcs-backup-key-value { padding: 4px 8px; border-radius: 7px; border: 1px solid var(--dcs-line); background: var(--dcs-layer); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; letter-spacing: .02em; }
+.dcs-inline-warning--red { border-color: color-mix(in srgb, var(--dcs-danger) 30%, transparent); background: color-mix(in srgb, var(--dcs-danger) 8%, transparent); color: var(--dcs-danger); }
+.dcs-restart-banner { display: flex; align-items: center; gap: 14px; margin: 12px 0; padding: 16px 18px; border-radius: 14px; border: 2px solid #f5cf8a; background: #fdf3df; color: #8a4b06; box-shadow: 0 10px 24px rgba(16, 24, 40, .08); }
+.dcs-restart-copy { flex: 1; min-width: 0; }
+.dcs-restart-copy strong { font-size: 15px; }
+.dcs-restart-copy p { margin: 3px 0 0; font-size: 12.5px; line-height: 1.55; opacity: .92; }
+body[data-ds-dark-theme] .dcs-restart-banner { border-color: #7a4c12; background: #2a1e0d; color: #f7bd6d; }
+.dcs-restart-steps { margin: 4px 0 0; padding-left: 20px; font-size: 13px; line-height: 1.75; }.dcs-git-note { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--dcs-line); background: var(--dcs-layer); font-size: 12px; line-height: 1.5; }
+.dcs-git-note.is-ok { flex-direction: row; align-items: center; gap: 8px; color: var(--dcs-success); border-color: color-mix(in srgb, var(--dcs-success) 25%, transparent); background: color-mix(in srgb, var(--dcs-success) 6%, transparent); }
+.dcs-git-note.is-warn { border-color: color-mix(in srgb, var(--dcs-warning) 30%, transparent); background: color-mix(in srgb, var(--dcs-warning) 8%, transparent); }
+.dcs-git-note p { margin: 0; color: var(--dcs-ink); }
+.dcs-git-note-head { display: flex; align-items: center; gap: 6px; color: var(--dcs-warning); }
+.dcs-git-note-cmds { display: flex; flex-direction: column; gap: 2px; padding: 6px 9px; border-radius: 8px; background: color-mix(in srgb, var(--dcs-ink) 4%, transparent); }
+.dcs-git-note-cmds p { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: var(--dcs-muted); }
+.dcs-git-note-details { margin-top: 4px; padding-top: 6px; border-top: 1px dashed var(--dcs-line); }
+.dcs-git-note-details p { margin-top: 4px; color: var(--dcs-muted); }
+.dcs-transport { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
 .dcs-encryption-state { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: 10px 12px; padding: 13px; border: 1px solid var(--dcs-line); border-radius: 12px; background: var(--dcs-layer); }
 .dcs-crypto-mark { flex: none; width: 38px; height: 38px; display: grid; place-items: center; border-radius: 11px; background: var(--dcs-bg); border: 1px solid var(--dcs-line); color: var(--dcs-muted); }
 .dcs-crypto-mark.is-on { color: var(--dcs-accent); border-color: var(--dcs-accent-line); background: var(--dcs-accent-soft); }
@@ -5783,24 +6475,36 @@ body[data-ds-dark-theme] .dcs-modal-backdrop, body[data-ds-dark-theme] .dcs-toas
 .dcs-file-drop { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 13px; border: 1px dashed var(--dsw-alias-border-l2, #d5d9e0); border-radius: 10px; background: var(--dsw-alias-bg-layer-1, #f7f8fa); }
 .dcs-file-input { display: none; }
 .dcs-file-name { color: var(--dsw-alias-label-secondary, #6b7280); font-size: 11.5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dcs-notice { position: fixed; right: 22px; bottom: 22px; z-index: 70; display: flex; align-items: flex-start; gap: 8px; max-width: min(380px, calc(100vw - 28px)); padding: 11px 12px; border: 1px solid var(--dsw-alias-border-l1, #e5e7eb); border-radius: 12px; background: var(--dsw-alias-bg-layer-2, #fff); color: var(--dsw-alias-label-primary, #1f2329); box-shadow: 0 12px 32px -12px rgba(16, 24, 40, .3), 0 1px 2px rgba(16, 24, 40, .08); font-size: 12px; line-height: 1.5; animation: dcs-toast-in .18s ease-out; }
-.dcs-notice--success { border-color: color-mix(in srgb, #147a55 35%, #e5e7eb); }
-.dcs-notice--success > svg { color: #147a55; }
-.dcs-notice--error { border-color: color-mix(in srgb, #b42318 35%, #e5e7eb); }
-.dcs-notice--error > svg { color: #b42318; }
+.dcs-notice { position: fixed; right: 28px; bottom: 28px; z-index: 90; display: flex; align-items: flex-start; gap: 12px; max-width: min(520px, calc(100vw - 40px)) !important; min-width: min(340px, calc(100vw - 40px)); padding: 26px 24px !important; border: 2px solid var(--dsw-alias-border-l1, #e5e7eb) !important; border-radius: 16px !important; background: var(--dsw-alias-bg-layer-2, #fff); color: var(--dsw-alias-label-primary, #1f2329); box-shadow: 0 22px 56px rgba(16, 24, 40, .28), 0 2px 6px rgba(16, 24, 40, .1) !important; font-size: 16px !important; line-height: 1.55; animation: dcs-toast-in .2s ease-out; }
+.dcs-notice--success { border-color: #cfe3a8 !important; background: #f2f8e6 !important; color: #4a6b1a !important; }
+.dcs-notice--error { border-color: #f3b9ac !important; background: #fdeeeb !important; color: #9c2f1d !important; }
+.dcs-notice--warning { border-color: #f5cf8a !important; background: #fdf3df !important; color: #8a4b06 !important; }
+.dcs-notice--info { border-color: #ecd3ab !important; background: #fdf6ec !important; color: #7a4a12 !important; }
+.dcs-notice--success > svg, .dcs-notice--error > svg, .dcs-notice--warning > svg, .dcs-notice--info > svg { color: inherit; }
+body[data-ds-dark-theme] .dcs-notice--success { border-color: #4d6b2a !important; background: #202a12 !important; color: #c9e39a !important; }
+body[data-ds-dark-theme] .dcs-notice--error { border-color: #7c3a2b !important; background: #2d1714 !important; color: #ffb1a2 !important; }
+body[data-ds-dark-theme] .dcs-notice--warning { border-color: #7a4c12 !important; background: #2a1e0d !important; color: #f7bd6d !important; }
+body[data-ds-dark-theme] .dcs-notice--info { border-color: #7a5a2a !important; background: #2a2113 !important; color: #e8c48f !important; }
 .dcs-notice > svg { flex: none; margin-top: 1px; }
 .dcs-notice-text { flex: 1; min-width: 0; }
 .dcs-notice-close { flex: none; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 6px; background: transparent; color: var(--dsw-alias-label-secondary, #6b7280); font-size: 16px; line-height: 1; cursor: pointer; }
 .dcs-notice-close:hover { background: color-mix(in srgb, #1f2329 7%, transparent); color: var(--dsw-alias-label-primary, #1f2329); }
-.dcs-toast { position: fixed; right: 24px; bottom: 24px; z-index: 90; display: flex; align-items: center; gap: 9px; max-width: min(520px, calc(100vw - 32px)); padding: 11px 14px; border-radius: 11px; border: 1px solid var(--dsw-alias-border-l1, #e5e7eb); background: var(--dsw-alias-bg-layer-2, #fff); color: var(--dsw-alias-label-primary, #1f2329); box-shadow: 0 12px 32px rgba(16, 24, 40, .16); font-size: 12.5px; animation: dcs-toast-in .18s ease-out; }
-.dcs-toast--success { border-color: color-mix(in srgb, #147a55 30%, transparent); color: #147a55; }
-.dcs-toast--error { border-color: color-mix(in srgb, #b42318 34%, transparent); color: #b42318; }
-.dcs-toast--warning { border-color: color-mix(in srgb, #b54708 34%, transparent); color: #b54708; }
-body[data-ds-dark-theme] .dcs-toast--success { color: #66d9a8; }
-body[data-ds-dark-theme] .dcs-toast--error { color: #ff938a; }
-body[data-ds-dark-theme] .dcs-toast--warning { color: #f7b27a; }
-.dcs-toast-text { flex: 1; min-width: 0; }
-.dcs-toast-action { border: 0; background: transparent; color: var(--dcs-accent, #4f6ef7); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; padding: 2px 4px; }
+.dcs-toast { position: fixed; right: 28px; bottom: 28px; z-index: 95; display: flex; align-items: flex-start; gap: 14px; max-width: min(520px, calc(100vw - 40px)) !important; min-width: min(340px, calc(100vw - 40px)); padding: 26px 26px 30px !important; border-radius: 16px !important; border: 2px solid var(--dsw-alias-border-l1, #e5e7eb) !important; background: var(--dsw-alias-bg-layer-2, #fff); color: var(--dsw-alias-label-primary, #1f2329); box-shadow: 0 22px 56px rgba(16, 24, 40, .28), 0 2px 6px rgba(16, 24, 40, .1) !important; font-size: 16px !important; line-height: 1.55; overflow: hidden; animation: dcs-toast-in .2s ease-out; }
+.dcs-toast > svg { flex: none; margin-top: 1px; }
+.dcs-toast--success { border-color: #cfe3a8 !important; color: #4a6b1a !important; background: #f2f8e6 !important; }
+.dcs-toast--error { border-color: #f3b9ac !important; color: #9c2f1d !important; background: #fdeeeb !important; }
+.dcs-toast--warning { border-color: #f5cf8a !important; color: #8a4b06 !important; background: #fdf3df !important; }
+.dcs-toast--info { border-color: #ecd3ab !important; color: #7a4a12 !important; background: #fdf6ec !important; }
+body[data-ds-dark-theme] .dcs-toast--success { border-color: #4d6b2a !important; color: #c9e39a !important; background: #202a12 !important; }
+body[data-ds-dark-theme] .dcs-toast--error { border-color: #7c3a2b !important; color: #ffb1a2 !important; background: #2d1714 !important; }
+body[data-ds-dark-theme] .dcs-toast--warning { border-color: #7a4c12 !important; color: #f7bd6d !important; background: #2a1e0d !important; }
+body[data-ds-dark-theme] .dcs-toast--info { border-color: #7a5a2a !important; color: #e8c48f !important; background: #2a2113 !important; }
+.dcs-toast-text { flex: 1; min-width: 0; word-break: break-word; }
+.dcs-toast-action { border: 0; background: transparent; color: var(--dcs-accent, #4f6ef7); font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; padding: 2px 4px; }
+.dcs-toast-close { flex: none; border: 0; background: transparent; color: inherit; opacity: .55; font-size: 20px; line-height: 1; cursor: pointer; padding: 0 2px; margin-top: -2px; }
+.dcs-toast-close:hover { opacity: 1; }
+.dcs-toast-progress { position: absolute; left: 0; bottom: 0; height: 3px; width: 100%; background: currentColor; opacity: .38; transform-origin: left center; animation-name: dcs-toast-progress; animation-timing-function: linear; animation-fill-mode: forwards; }
+@keyframes dcs-toast-progress { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 @keyframes dcs-toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .dcs-panel-icon { display: grid; place-items: center; color: currentColor; }
 .dcs-panel-icon[data-active="true"] { color: var(--dsw-alias-brand-primary, currentColor); }
@@ -5832,7 +6536,7 @@ body[data-ds-dark-theme] .dcs-toast--warning { color: #f7b27a; }
   .dcs-card { padding: 16px; border-radius: 14px; }
   .dcs-modal-backdrop { padding: 10px; align-items: flex-end; }
   .dcs-modal { max-height: 92vh; border-radius: 16px; }
-  .dcs-toast { right: 12px; bottom: 12px; left: 12px; max-width: none; }
+  .dcs-toast, .dcs-notice { right: 12px; bottom: 12px; left: 12px; max-width: none !important; min-width: 0; font-size: 15px !important; padding: 16px 16px 18px !important; }
   .dcs-encryption-state { flex-wrap: wrap; }
   .dcs-encryption-actions { width: 100%; justify-content: flex-start; }
 }
@@ -5943,6 +6647,5 @@ body[data-ds-dark-theme] .dcs-toast--warning { color: #f7b27a; }
     return { inject, apply };
   },
 });
-
 
 

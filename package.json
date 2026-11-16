@@ -1,6 +1,6 @@
 {
   "name": "dsh-chat-syncer",
-  "version": "0.15.0",
+  "version": "0.16.18",
   "type": "module",
   "description": "多端会话同步助手：DSH multi-device session sync through a user-owned private Gitee or GitHub repository, with per-user/per-device folders, a shared latest revision, consent gate, optional AES-256-GCM packages, sidebar workspace registration, import/export and deletion.",
   "license": "AGPL-3.0-only",

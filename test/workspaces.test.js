@@ -257,3 +257,29 @@ test('directoryExists only accepts folders', async () => {
   assert.equal(await directoryExists('.'), true);
   assert.equal(await directoryExists('.\\does-not-exist-8f2a'), false);
 });
+
+test('an existing workspace is reused through resolveByPath', async () => {
+  const existing = {
+    path: 'D:\\Demo\\demo1',
+    sessionIds: [],
+    async attachSession(sessionId) {
+      this.sessionIds.push(sessionId);
+    },
+  };
+  const registry = {
+    async create() {
+      throw new Error('workspace already exists');
+    },
+    async resolveByPath(target) {
+      return target === 'D:\\Demo\\demo1' ? existing : undefined;
+    },
+  };
+  const report = await reconcileWorkspaces({
+    registry,
+    entries: [{ sessionId: 's-1', cwd: 'D:\\Demo\\demo1' }],
+    checkDirectory: present(['D:\\Demo\\demo1']),
+  });
+  assert.equal(report.attached, 1);
+  assert.deepEqual(existing.sessionIds, ['s-1']);
+  assert.deepEqual(report.failed, []);
+});

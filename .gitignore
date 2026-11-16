@@ -9,6 +9,13 @@ node_modules/
 .dsh-test/
 *.log
 
+# Local secrets: access tokens and scratch notes must never be committed
+private/
+*.token
+*.secret
+.env
+.env.*
+
 # Other files and folders
 .settings/
 
